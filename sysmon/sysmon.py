@@ -178,11 +178,11 @@ def check_for_reboot():
 def check_for_updates():
     """ Check for available updates """
     
-    apt_get = 'apt-get update > /dev/null && apt-get -s upgrade'
+    apt_get_cmd = 'apt-get update > /dev/null && apt-get -s upgrade'
     
-    grep = "egrep '([1-9][0-9]*) aktualisiert, ([0-9]+) neu installiert, ([0-9]+) zu entfernen und ([0-9]+) nicht aktualisiert'"
+    grep_cmd = "egrep '^([1-9][0-9]*) aktualisiert, ([0-9]+) neu installiert, ([0-9]+) zu entfernen und ([0-9]+) nicht aktualisiert.$'"
     
-    updates = qx(apt_get + '|' + grep)
+    updates = qx(apt_get_cmd + '|' + grep_cmd)
     
     if updates:
         send_mail("Updates Available", qx('apt-get upgrade -s --just-print'))
