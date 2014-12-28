@@ -11,7 +11,7 @@ import datetime
 import email.mime.text
 import ConfigParser
 
-global_config = ConfigParser.SafeConfigParser(allow_no_value=True)
+global_config = ConfigParser.SafeConfigParser()
 global_config.read('sysmon.conf')
 
 
@@ -190,6 +190,11 @@ def check_for_updates():
 
 def check_firewall():
     """ Check that firewall rules are enabled """
+	
+	current_iptables_rules = qx('iptables -L')
+
+	if current_iptables_rules != open(global_config.get('monitoring', 'iptables_rules')).readlines():
+		send_mail("Load Average High!", current_iptables_rules)
 
 
 def check_load_avg():
