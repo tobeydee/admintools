@@ -194,7 +194,7 @@ def check_firewall():
 	current_iptables_rules = qx('iptables -L')
 
 	if current_iptables_rules != open(global_config.get('monitoring', 'iptables_rules')).readlines():
-		send_mail("Load Average High!", current_iptables_rules)
+		send_mail("Firewall not configured!", current_iptables_rules)
 
 
 def check_load_avg():
