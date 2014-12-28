@@ -193,8 +193,8 @@ def check_firewall():
 	
 	current_iptables_rules = qx('iptables -L')
 
-	if current_iptables_rules != open(global_config.get('monitoring', 'iptables_rules')).readlines():
-		send_mail("Firewall not configured!", current_iptables_rules)
+    if current_iptables_rules != open(global_config.get('monitoring', 'iptables_rules')).readlines():
+        send_mail("Firewall not configured!", current_iptables_rules)
 
 
 def check_load_avg():
@@ -216,6 +216,8 @@ def run_checks():
     check_for_updates()
     
     check_load_avg()
+
+	check_firewall()
 
 
 if __name__ == '__main__':
