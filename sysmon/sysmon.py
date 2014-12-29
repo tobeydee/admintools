@@ -29,12 +29,12 @@ class FileSystemUsage(object):
 
         return dict(map(lambda line: helper(line), list_of_strings))
     
-    def changed(self, last):
+    def difference(self, previous_usage):
         """ Returns the difference of the current usage compared with the prev. usage. """
 
-        usage_items = self.usage.items()
+        current_usage = self.usage.items()
 
-        return list(set(usage_items) - set(last.usage.items()) & set(usage_items))
+        return list(set(current_usage) - set(previous_usage.usage.items()) & set(current_usage))
 
 
 def __send_mail_wrapper__(subject, content):
@@ -101,17 +101,17 @@ def check_hdd_usage():
         pickle.dump(FileSystemUsage(qx('df -h')), file(local_storage_filename, 'w'))
         return -1
     
-    curr = FileSystemUsage(qx('df -h'))
+    current_usage = FileSystemUsage(qx('df -h'))
     
-    last = pickle.load(file(local_storage_filename, 'r'))
+    previous_usage = pickle.load(file(local_storage_filename, 'r'))
     
-    diff = curr.changed(last)
+    diff = current_usage.difference(previous_usage)
     
     if diff:
-        overview = ['previous usage: ' + str(last.usage['/']), 'current usage: ' + str(diff)]
+        overview = ['previous usage: ' + str(previous_usage.usage), 'difference: ' + str(diff)]
         send_mail("File System Usage!", overview)
 	
-    pickle.dump(curr, file(local_storage_filename, 'w'))
+    pickle.dump(current_usage, file(local_storage_filename, 'w'))
     
     
 def check_jetty_log_size():
