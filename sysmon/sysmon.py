@@ -17,23 +17,24 @@ global_config.read('sysmon.conf')
 
 class FileSystemUsage(object):
     
-    def __init__(self, dfh):
-        self.usage = self.__parse__(dfh[1:]) # skip first line (header) in output
+    def __init__(self, df_minus_h_output):
+        self.usage = self.__parse__(df_minus_h_output[1:]) # skip first line (header) in output
     
-    def __parse__(self, data):
+    def __parse__(self, list_of_strings):
 
-        def helper(s):
-            data = map(lambda x: x.replace('\n', '').replace('%', ''), s.split(' ')[-2:])
-            a,b = tuple(reversed(data))
+        def helper(line):
+            list_of_strings = map(lambda x: x.replace('\n', '').replace('%', ''), line.split(' ')[-2:])
+            a,b = tuple(reversed(list_of_strings))
             return (a, int(b)) # convert percentage from string to integer
 
-        return dict(map(lambda line: helper(line), data))
+        return dict(map(lambda line: helper(line), list_of_strings))
     
     def changed(self, last):
         """ Returns the difference of the current usage compared with the prev. usage. """
-        this = self.usage.items()
 
-        return list(set(this) - set(last.usage.items()) & set(this))
+        usage_items = self.usage.items()
+
+        return list(set(usage_items) - set(last.usage.items()) & set(usage_items))
 
 
 def __send_mail_wrapper__(subject, content):
@@ -107,7 +108,7 @@ def check_hdd_usage():
     diff = curr.changed(last)
     
     if diff:
-        overview = ['last => ' + str(last.usage), 'curr => ' + str(diff)]
+        overview = ['previous usage: ' + str(last.usage['/']), 'current usage: ' + str(diff)]
         send_mail("File System Usage!", overview)
 	
     pickle.dump(curr, file(local_storage_filename, 'w'))
