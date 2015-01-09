@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__doc__ = 'Monitors a UNIX based system by a given set of functions.'
+__doc__ = """Monitors a UNIX based system by a given set of functions."""
 
 import os
 import subprocess
